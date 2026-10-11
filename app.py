@@ -3,9 +3,11 @@ import json
 import math
 import statistics
 from datetime import datetime, timedelta
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, Response
 from flask_cors import CORS
 import sys
+import io
+import csv
 from data.live_data import fetch_live_prices, get_all_states, get_districts, get_commodities_list, refresh_cache, get_live_data
 from data.chatbot import answer_query
 
@@ -456,10 +458,6 @@ def get_dashboard_stats():
         'average_prices_by_category': avg_prices
     })
 
-import io
-import csv
-from flask import Response
-
 @app.route('/atlas')
 def atlas_page():
     return render_template('atlas.html')
@@ -470,8 +468,15 @@ def reports_page():
 
 @app.route('/market/<market_id>')
 def market_redirect(market_id):
-    from flask import redirect
     return redirect(f'/?market={market_id}')
+
+@app.route('/trends')
+def trends_redirect():
+    return redirect('/atlas')
+
+@app.route('/alerts')
+def alerts_redirect():
+    return redirect('/')
 
 def compute_atlas_markets():
     result = []
@@ -970,6 +975,19 @@ def chat_endpoint():
     
     result = answer_query(message, language=language, db=db, live_data_func=fetch_live_prices)
     return jsonify(result)
+@app.route('/health')
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "markets_loaded": len(db.get('markets', [])),
+        "commodities_loaded": len(db.get('commodities', [])),
+        "prices_loaded": len(db.get('prices', []))
+    }), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
+    print(f"Starting Smart Mandi server on {host}:{port} (debug={debug})")
+    app.run(host=host, port=port, debug=debug)
