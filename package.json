@@ -1,0 +1,20 @@
+{
+  "name": "smart-mandi-2.0",
+  "version": "2.0.0",
+  "description": "Smart Mandi Price Advisor & Kisan AI Assistant",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve .",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "smart-mandi",
+    "agriculture",
+    "farmer",
+    "ai",
+    "agmarknet"
+  ],
+  "author": "Sanket Linganwar",
+  "license": "MIT"
+}

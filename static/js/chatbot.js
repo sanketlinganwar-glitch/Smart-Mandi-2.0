@@ -62,7 +62,7 @@
                 const link = document.createElement('link');
                 link.id = 'mandi-chatbot-css';
                 link.rel = 'stylesheet';
-                link.href = '/static/css/chatbot.css';
+                link.href = 'static/css/chatbot.css';
                 document.head.appendChild(link);
             }
         },

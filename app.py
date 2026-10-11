@@ -984,7 +984,19 @@ def chat_endpoint():
     language = req_data.get('language', 'en')
     
     result = answer_query(message, language=language, db=db, live_data_func=fetch_live_prices)
-    return jsonify(result)
+@app.route('/health')
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "markets_loaded": len(db.get('markets', [])),
+        "commodities_loaded": len(db.get('commodities', [])),
+        "prices_loaded": len(db.get('prices', []))
+    }), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
+    print(f"Starting Smart Mandi server on {host}:{port} (debug={debug})")
+    app.run(host=host, port=port, debug=debug)
